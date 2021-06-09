@@ -41,6 +41,7 @@ export interface DynamoDBTransportOptions {
   tableName: string;
   level: string;
   dynamoDoc?: boolean;
+  key?: string;
 }
 
 export interface DynamoDBTransportInstance extends TransportInstance {
@@ -56,6 +57,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
   region: string;
   tableName: string;
   dynamoDoc: boolean;
+  key: string;
   
   constructor(options?: DynamoDBTransportOptions) {
     super(options);
@@ -98,6 +100,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
     this.region = options.region;
     this.tableName = options.tableName;
     this.dynamoDoc = options.dynamoDoc;
+    this.key = options.key;
   }
 
   log(level, msg, meta, callback) {
@@ -122,7 +125,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
       params = {
         TableName: this.tableName,
         Item: {
-          id: uuid.v4(),
+          id: this.key || uuid.v4(),
           level: level,
           timestamp: datify(Date.now()),
           msg: msg,
@@ -141,7 +144,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
         TableName: this.tableName,
         Item: {
           id: {
-            "S": uuid.v4()
+            "S": this.key || uuid.v4()
           },
           level: {
             "S": level
