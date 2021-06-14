@@ -66,11 +66,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
       options = <DynamoDBTransportOptions>{};
     }
     this.regions = ["us-east-1", "us-west-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-northeast-1", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "sa-east-1"];
-    if (options.useEnvironment) {
-      options.accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-      options.secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-      options.region = process.env.AWS_REGION;
-    }
+    
     if (options.accessKeyId == null) {
       throw new Error("need accessKeyId");
     }
