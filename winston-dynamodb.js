@@ -95,7 +95,7 @@
         Item: {
           id: this.key || uuid.v4(),
           level: level,
-          timestamp: new Date().getTime(),
+          timestamp: new Date().getTime().toString(),
           msg: msg,
           hostname: hostname
         }
@@ -118,7 +118,7 @@
             "S": level
           },
           timestamp: {
-            "N": new Date().getTime()
+            "N": new Date().getTime().toString()
           },
           msg: {
             "S": msg
