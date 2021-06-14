@@ -111,7 +111,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
         Item: {
           id: this.key || uuid.v4(),
           level: level,
-          timestamp: datify(Date.now()),
+          timestamp: new Date().getTime(),
           msg: msg,
           hostname: hostname
         }
@@ -134,7 +134,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
             "S": level
           },
           timestamp: {
-            "S": datify(Date.now())
+            "N": new Date().getTime().
           },
           msg: {
             "S": msg
