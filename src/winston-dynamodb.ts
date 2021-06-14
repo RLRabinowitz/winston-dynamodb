@@ -67,18 +67,6 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
     }
     this.regions = ["us-east-1", "us-west-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-northeast-1", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "sa-east-1"];
     
-    if (options.accessKeyId == null) {
-      throw new Error("need accessKeyId");
-    }
-    if (options.secretAccessKey == null) {
-      throw new Error("need secretAccessKey");
-    }
-    if (options.region == null) {
-      throw new Error("need region");
-    }
-    if (this.regions.indexOf(options.region) < 0) {
-      throw new Error("unavailable region given");
-    }
     if (options.tableName == null) {
       throw new Error("need tableName");
     }
