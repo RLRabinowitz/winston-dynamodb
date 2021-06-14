@@ -42,23 +42,7 @@
       options = {};
     }
     regions = ["localhost", "us-east-1", "us-west-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-northeast-1", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "sa-east-1"];
-    if (options.useEnvironment) {
-      options.accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-      options.secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-      options.region = process.env.AWS_REGION;
-    }
-    if (options.accessKeyId == null) {
-      throw new Error("need accessKeyId");
-    }
-    if (options.secretAccessKey == null) {
-      throw new Error("need secretAccessKey");
-    }
-    if (options.region == null) {
-      throw new Error("need region");
-    }
-    if (ref = options.region, indexOf.call(regions, ref) < 0) {
-      throw new Error("unavailable region given");
-    }
+    
     if (options.tableName == null) {
       throw new Error("need tableName");
     }
@@ -82,7 +66,8 @@
     this.AWS = AWS;
     this.region = options.region;
     this.tableName = options.tableName;
-    return this.dynamoDoc = options.dynamoDoc;
+    this.dynamoDoc = options.dynamoDoc;
+    return this.key = options.key;
   };
 
   util.inherits(DynamoDB, winston.Transport);
@@ -108,7 +93,7 @@
       params = {
         TableName: this.tableName,
         Item: {
-          id: uuid.v4(),
+          id: this.key || uuid.v4(),
           level: level,
           timestamp: datify(Date.now()),
           msg: msg,
@@ -127,7 +112,7 @@
         TableName: this.tableName,
         Item: {
           id: {
-            "S": uuid.v4()
+            "S": this.key || uuid.v4()
           },
           level: {
             "S": level
