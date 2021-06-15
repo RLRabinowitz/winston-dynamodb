@@ -41,6 +41,7 @@ export interface DynamoDBTransportOptions {
   tableName: string;
   level: string;
   dynamoDoc?: boolean;
+  key?: string;
 }
 
 export interface DynamoDBTransportInstance extends TransportInstance {
@@ -56,6 +57,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
   region: string;
   tableName: string;
   dynamoDoc: boolean;
+  key: string;
   
   constructor(options?: DynamoDBTransportOptions) {
     super(options);
@@ -64,23 +66,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
       options = <DynamoDBTransportOptions>{};
     }
     this.regions = ["us-east-1", "us-west-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-northeast-1", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "sa-east-1"];
-    if (options.useEnvironment) {
-      options.accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-      options.secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-      options.region = process.env.AWS_REGION;
-    }
-    if (options.accessKeyId == null) {
-      throw new Error("need accessKeyId");
-    }
-    if (options.secretAccessKey == null) {
-      throw new Error("need secretAccessKey");
-    }
-    if (options.region == null) {
-      throw new Error("need region");
-    }
-    if (this.regions.indexOf(options.region) < 0) {
-      throw new Error("unavailable region given");
-    }
+    
     if (options.tableName == null) {
       throw new Error("need tableName");
     }
@@ -98,6 +84,7 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
     this.region = options.region;
     this.tableName = options.tableName;
     this.dynamoDoc = options.dynamoDoc;
+    this.key = options.key;
   }
 
   log(level, msg, meta, callback) {
@@ -122,9 +109,9 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
       params = {
         TableName: this.tableName,
         Item: {
-          id: uuid.v4(),
+          id: this.key || uuid.v4(),
           level: level,
-          timestamp: datify(Date.now()),
+          timestamp: new Date().getTime().toString(),
           msg: msg,
           hostname: hostname
         }
@@ -141,13 +128,13 @@ export class DynamoDB extends winston.Transport implements DynamoDBTransportInst
         TableName: this.tableName,
         Item: {
           id: {
-            "S": uuid.v4()
+            "S": this.key || uuid.v4()
           },
           level: {
             "S": level
           },
           timestamp: {
-            "S": datify(Date.now())
+            "N": new Date().getTime().toString()
           },
           msg: {
             "S": msg
